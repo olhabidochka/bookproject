@@ -1,0 +1,114 @@
+{% extends 'bookstore/base.html' %}
+
+{% block title %}{{ author.get_full_name }} - Книгарня{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'bookstore:index' %}">Головна</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'bookstore:author_list' %}">Автори</a></li>
+            <li class="breadcrumb-item active">{{ author.get_full_name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-4">
+        <div class="col-md-3 text-center">
+            {% if author.photo %}
+            <img src="{{ author.photo.url }}" class="img-fluid rounded-circle shadow mb-3" alt="{{ author.get_full_name }}" style="width: 200px; height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3 shadow" style="width: 200px; height: 200px;">
+                <i class="fas fa-user fa-5x"></i>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-9">
+            <h1>{{ author.get_full_name }}</h1>
+
+            {% if author.birth_date %}
+            <p class="text-muted">
+                <i class="fas fa-birthday-cake"></i> Дата народження: {{ author.birth_date|date:"d.m.Y" }}
+            </p>
+            {% endif %}
+
+            <p class="lead">
+                <span class="badge bg-secondary fs-6">{{ books.count }} книг у нашому каталозі</span>
+            </p>
+
+            {% if author.bio %}
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Біографія</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ author.bio|linebreaks }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if user.is_staff %}
+            <div class="mb-3">
+                <a href="{% url 'bookstore:author_update' author.pk %}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Редагувати
+                </a>
+                <a href="{% url 'bookstore:author_delete' author.pk %}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Видалити
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Books by this author -->
+    <h3 class="mb-4">Книги автора</h3>
+
+    {% if books %}
+    <div class="row">
+        {% for book in books %}
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card h-100">
+                {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}" style="height: 300px; object-fit: cover;">
+                {% else %}
+                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <i class="fas fa-book fa-3x"></i>
+                </div>
+                {% endif %}
+
+                {% if book.discount > 0 %}
+                <div class="position-absolute top-0 end-0 m-2">
+                    <span class="badge bg-danger">-{{ book.discount }}%</span>
+                </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ book.title|truncatewords:5 }}</h5>
+                    <p class="text-muted small">{{ book.publisher.name }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        {% if book.discount > 0 %}
+                        <div>
+                            <span class="text-decoration-line-through text-muted small">{{ book.price }} ₴</span>
+                            <span class="h5 mb-0 text-primary d-block">{{ book.final_price }} ₴</span>
+                        </div>
+                        {% else %}
+                        <span class="h5 mb-0 text-primary">{{ book.price }} ₴</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <a href="{% url 'bookstore:book_detail' book.pk %}" class="btn btn-sm btn-outline-primary w-100">
+                        Детальніше
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> У нашому каталозі ще немає книг цього автора.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

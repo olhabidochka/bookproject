@@ -1,0 +1,113 @@
+{% extends 'bookstore/base.html' %}
+
+{% block title %}Профіль - Книгарня{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Профіль користувача</h1>
+
+    <div class="row">
+        <!-- User Info -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if profile.avatar %}
+                    <img src="{{ profile.avatar.url }}" class="rounded-circle mb-3" alt="Avatar" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 150px; height: 150px;">
+                        <i class="fas fa-user fa-4x"></i>
+                    </div>
+                    {% endif %}
+
+                    <h4>{{ user.get_full_name|default:user.username }}</h4>
+                    <p class="text-muted">@{{ user.username }}</p>
+
+                    <a href="{% url 'bookstore:profile_edit' %}" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-edit"></i> Редагувати профіль
+                    </a>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Контактна інформація</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Email:</strong><br>{{ user.email|default:"Не вказано" }}</p>
+                    <p><strong>Телефон:</strong><br>{{ profile.phone|default:"Не вказано" }}</p>
+                    <p><strong>Адреса:</strong><br>
+                        {% if profile.address %}
+                            {{ profile.address }}<br>
+                            {{ profile.city }}, {{ profile.postal_code }}
+                        {% else %}
+                            Не вказано
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders History -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-shopping-bag"></i> Історія замовлень</h5>
+                    <span class="badge bg-light text-dark">Всього: {{ orders.count }}</span>
+                </div>
+                <div class="card-body">
+                    {% if orders %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>№</th>
+                                    <th>Дата</th>
+                                    <th>Статус</th>
+                                    <th>Сума</th>
+                                    <th>Дії</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td>#{{ order.id }}</td>
+                                    <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
+                                    <td>
+                                        {% if order.status == 'pending' %}
+                                        <span class="badge bg-warning">Очікується</span>
+                                        {% elif order.status == 'processing' %}
+                                        <span class="badge bg-info">В обробці</span>
+                                        {% elif order.status == 'shipped' %}
+                                        <span class="badge bg-primary">Відправлено</span>
+                                        {% elif order.status == 'delivered' %}
+                                        <span class="badge bg-success">Доставлено</span>
+                                        {% elif order.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Скасовано</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><strong>{{ order.total_price }} ₴</strong></td>
+                                    <td>
+                                        <a href="{% url 'bookstore:order_detail' order.pk %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> Деталі
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">У вас ще немає замовлень</p>
+                        <a href="{% url 'bookstore:book_list' %}" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart"></i> Почати покупки
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

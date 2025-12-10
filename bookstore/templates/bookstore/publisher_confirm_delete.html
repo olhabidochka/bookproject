@@ -1,0 +1,42 @@
+{% extends 'bookstore/base.html' %}
+
+{% block title %}Видалення видавництва - Книгарня{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Підтвердження видалення</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>Увага!</strong> Ця дія незворотна!
+                    </div>
+
+                    <p class="lead">Ви впевнені, що хочете видалити видавництво:</p>
+                    <div class="text-center my-4">
+                        {% if publisher.logo %}
+                        <img src="{{ publisher.logo.url }}" class="img-fluid mb-3" alt="{{ publisher.name }}" style="max-height: 150px;">
+                        {% endif %}
+                        <h4>{{ publisher.name }}</h4>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg w-50">
+                                <i class="fas fa-trash"></i> Так, видалити
+                            </button>
+                            <a href="{% url 'bookstore:publisher_detail' publisher.pk %}" class="btn btn-secondary btn-lg w-50">
+                                <i class="fas fa-times"></i> Скасувати
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

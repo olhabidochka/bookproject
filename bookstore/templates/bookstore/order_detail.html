@@ -1,0 +1,144 @@
+{% extends 'bookstore/base.html' %}
+
+{% block title %}Замовлення #{{ order.id }} - Книгарня{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-receipt"></i> Замовлення #{{ order.id }}</h1>
+        <a href="{% url 'bookstore:profile' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> До профілю
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Order Info -->
+        <div class="col-md-8">
+            <!-- Order Status -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Інформація про замовлення</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Дата створення:</strong><br>{{ order.created_at|date:"d.m.Y H:i" }}</p>
+                            <p><strong>Оновлено:</strong><br>{{ order.updated_at|date:"d.m.Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Статус:</strong><br>
+                                {% if order.status == 'pending' %}
+                                <span class="badge bg-warning fs-6">Очікується</span>
+                                {% elif order.status == 'processing' %}
+                                <span class="badge bg-info fs-6">В обробці</span>
+                                {% elif order.status == 'shipped' %}
+                                <span class="badge bg-primary fs-6">Відправлено</span>
+                                {% elif order.status == 'delivered' %}
+                                <span class="badge bg-success fs-6">Доставлено</span>
+                                {% elif order.status == 'cancelled' %}
+                                <span class="badge bg-danger fs-6">Скасовано</span>
+                                {% endif %}
+                            </p>
+                            <p><strong>Загальна сума:</strong><br>
+                                <span class="h4 text-primary">{{ order.total_price }} ₴</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-box"></i> Товари в замовленні</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Книга</th>
+                                    <th>Ціна</th>
+                                    <th>Кількість</th>
+                                    <th>Сума</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items.all %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if item.book.cover_image %}
+                                            <img src="{{ item.book.cover_image.url }}" alt="{{ item.book.title }}" style="width: 50px; height: 70px; object-fit: cover;" class="rounded me-3">
+                                            {% else %}
+                                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded me-3" style="width: 50px; height: 70px;">
+                                                <i class="fas fa-book"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div>
+                                                <a href="{% url 'bookstore:book_detail' item.book.pk %}" class="text-decoration-none">
+                                                    {{ item.book.title }}
+                                                </a>
+                                                <br>
+                                                <small class="text-muted">{{ item.book.get_authors_display|truncatewords:3 }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ item.price }} ₴</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td><strong>{{ item.total_price }} ₴</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Разом:</strong></td>
+                                    <td><strong class="text-primary h5">{{ order.total_price }} ₴</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            {% if order.notes %}
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-comment"></i> Примітки</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ order.notes }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Delivery Info -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-shipping-fast"></i> Доставка</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Адреса:</strong><br>{{ order.delivery_address }}</p>
+                    <p><strong>Місто:</strong><br>{{ order.delivery_city }}</p>
+                    <p><strong>Поштовий індекс:</strong><br>{{ order.delivery_postal_code }}</p>
+                    <p><strong>Телефон:</strong><br>{{ order.phone }}</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h6><i class="fas fa-info-circle"></i> Важлива інформація</h6>
+                    <ul class="small mb-0">
+                        <li>Очікуваний термін доставки: 2-5 робочих днів</li>
+                        <li>Оплата при отриманні</li>
+                        <li>Можливість повернення протягом 14 днів</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

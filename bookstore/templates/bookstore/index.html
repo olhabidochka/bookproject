@@ -1,0 +1,147 @@
+{% extends 'bookstore/base.html' %}
+
+{% block title %}Головна - Книгарня{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="jumbotron bg-light p-5 rounded-3 mb-4">
+        <h1 class="display-4">Ласкаво просимо до нашої книгарні!</h1>
+        <p class="lead">Відкрийте для себе світ книг. Тисячі найкращих видань в одному місці.</p>
+        <hr class="my-4">
+        <p>Швидка доставка по всій Україні. Оплата при отриманні.</p>
+        <a class="btn btn-primary btn-lg" href="{% url 'bookstore:book_list' %}" role="button">
+            <i class="fas fa-book"></i> Переглянути каталог
+        </a>
+    </div>
+
+    <!-- Popular Genres -->
+    <section class="mb-5">
+        <h2 class="mb-4">Популярні жанри</h2>
+        <div class="row">
+            {% for genre in popular_genres %}
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ genre.name }}</h5>
+                        <p class="text-muted">{{ genre.book_count }} книг</p>
+                        <a href="{% url 'bookstore:book_list' %}?genre={{ genre.id }}" class="btn btn-sm btn-outline-primary">
+                            Переглянути
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Featured Books -->
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Рекомендовані книги</h2>
+            <a href="{% url 'bookstore:book_list' %}" class="btn btn-outline-primary">
+                Всі книги <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        <div class="row">
+            {% for book in featured_books %}
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card h-100">
+                    {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}" style="height: 300px; object-fit: cover;">
+                    {% else %}
+                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 300px;">
+                        <i class="fas fa-book fa-3x"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ book.title|truncatewords:5 }}</h5>
+                        <p class="text-muted small">{{ book.get_authors_display|truncatewords:3 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-primary">{{ book.final_price }} ₴</span>
+                            {% if book.discount > 0 %}
+                            <span class="badge bg-danger">-{{ book.discount }}%</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a href="{% url 'bookstore:book_detail' book.pk %}" class="btn btn-sm btn-outline-primary w-100">
+                            Детальніше
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-muted">Книги не знайдено.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- New Books -->
+    <section class="mb-5">
+        <h2 class="mb-4">Нові надходження</h2>
+        <div class="row">
+            {% for book in new_books %}
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card h-100">
+                    {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}" style="height: 300px; object-fit: cover;">
+                    {% else %}
+                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 300px;">
+                        <i class="fas fa-book fa-3x"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ book.title|truncatewords:5 }}</h5>
+                        <p class="text-muted small">{{ book.get_authors_display|truncatewords:3 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-primary">{{ book.final_price }} ₴</span>
+                            {% if book.discount > 0 %}
+                            <span class="badge bg-danger">-{{ book.discount }}%</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a href="{% url 'bookstore:book_detail' book.pk %}" class="btn btn-sm btn-outline-primary w-100">
+                            Детальніше
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-muted">Книги не знайдено.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="mb-5">
+        <div class="row text-center">
+            <div class="col-md-3">
+                <i class="fas fa-shipping-fast fa-3x text-primary mb-3"></i>
+                <h5>Швидка доставка</h5>
+                <p class="text-muted">По всій Україні</p>
+            </div>
+            <div class="col-md-3">
+                <i class="fas fa-credit-card fa-3x text-primary mb-3"></i>
+                <h5>Оплата при отриманні</h5>
+                <p class="text-muted">Зручно і безпечно</p>
+            </div>
+            <div class="col-md-3">
+                <i class="fas fa-undo fa-3x text-primary mb-3"></i>
+                <h5>Повернення товару</h5>
+                <p class="text-muted">Протягом 14 днів</p>
+            </div>
+            <div class="col-md-3">
+                <i class="fas fa-headset fa-3x text-primary mb-3"></i>
+                <h5>Підтримка 24/7</h5>
+                <p class="text-muted">Завжди на зв'язку</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
