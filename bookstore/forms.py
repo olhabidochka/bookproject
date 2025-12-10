@@ -15,7 +15,7 @@ class UserRegistrationForm(UserCreationForm):
     )
     first_name = forms.CharField(
         max_length=100,
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': "Ім'я"
@@ -23,7 +23,7 @@ class UserRegistrationForm(UserCreationForm):
     )
     last_name = forms.CharField(
         max_length=100,
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'Прізвище'
