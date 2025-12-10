@@ -212,6 +212,8 @@ def user_login(request):
     if request.user.is_authenticated:
         return redirect('bookstore:index')
 
+    next_url = request.GET.get('next', '')
+
     if request.method == 'POST':
         form = UserLoginForm(request, data=request.POST)
         if form.is_valid():
@@ -221,11 +223,16 @@ def user_login(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, f'Вітаємо, {username}!')
-                return redirect('bookstore:index')
+
+                return redirect(request.POST.get('next') or 'bookstore:index')
     else:
         form = UserLoginForm()
 
-    return render(request, 'bookstore/login.html', {'form': form})
+    context = {
+        'form': form,
+        'next': next_url
+    }
+    return render(request, 'bookstore/login.html', context)
 
 
 def user_logout(request):

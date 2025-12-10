@@ -6,8 +6,8 @@ from django.utils.text import slugify
 
 class Author(models.Model):
 
-    first_name = models.CharField(max_length=100, verbose_name="Ім'я")
-    last_name = models.CharField(max_length=100, verbose_name="Прізвище")
+    first_name = models.CharField(blank=True, max_length=100, verbose_name="Ім'я")
+    last_name = models.CharField(blank=True,  max_length=100, verbose_name="Прізвище")
     bio = models.TextField(blank=True, verbose_name="Біографія")
     photo = models.ImageField(upload_to='authors/', blank=True, null=True, verbose_name="Фото")
     birth_date = models.DateField(blank=True, null=True, verbose_name="Дата народження")
